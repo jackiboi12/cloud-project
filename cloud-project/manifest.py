@@ -2,7 +2,7 @@
    "fileLocations": [
        {
            "URIs": [
-               "s3://BUCKET-NAME/Amazon-Bestseller-Dataset.csv"
+               "s3://s3-file-mr-beast/MrBeast_youtube_stats.csv"
            ]
        }
    ],
