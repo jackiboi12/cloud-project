@@ -52,6 +52,9 @@ with st.form("initial-submit"):
 
 if st.session_state.initial_submit:
     df = pd.DataFrame(extract_entries_for_url(url))
+    null_flag = 0
+    if df['like_count'].isnull().any():
+        null_flag = 1
     st.header(df["author"][0])
     convert = {}
     for i in range(2, 6):
@@ -76,5 +79,6 @@ if st.session_state.initial_submit:
     csv_name = st.text_input("Enter CSV File Name:")
     datasource_name = st.text_input("Enter Datasource Name:")
 
+    
     if  datasource_name  and csv_name:
-        upload_csv(df, datasource_name, csv=csv_name + ".csv")
+        upload_csv(df, datasource_name, null_flag, csv=csv_name + ".csv")
