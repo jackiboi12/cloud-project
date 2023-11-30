@@ -1,7 +1,7 @@
 import boto3
 import streamlit as st
 
-def upload_csv(df, dataSource, csv):
+def upload_csv(df, dataSource, null_flag, csv):
 
     dataSet = dataSource + "-dataset"
     csv_content = df.to_csv(index=False)
@@ -172,9 +172,13 @@ def upload_csv(df, dataSource, csv):
 
     print('Data Set Created')
 
+    if null_flag:
+        anal = '774e55f9-b82c-4c2c-b0e7-3c7cf9225031'
+    else:
+        anal = 'cbd4cb7e-a6dd-470c-95b0-3eb31b454b83'
     response_describe_analysis = qs.describe_analysis(
         AwsAccountId='743543075921',
-        AnalysisId='cbd4cb7e-a6dd-470c-95b0-3eb31b454b83'
+        AnalysisId=anal
     )
     analysis_arn = response_describe_analysis['Analysis']['Arn']
 
