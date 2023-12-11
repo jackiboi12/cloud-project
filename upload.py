@@ -172,6 +172,7 @@ def upload_csv(df, dataSource, null_flag, csv):
 
     print('Data Set Created')
 
+    print(null_flag)
     if null_flag:
         anal = '774e55f9-b82c-4c2c-b0e7-3c7cf9225031'
     else:
@@ -247,4 +248,5 @@ def upload_csv(df, dataSource, null_flag, csv):
     )
     print(response_analysis)
 
+    st.write(null_flag)
     st.write("Analysis Created!")

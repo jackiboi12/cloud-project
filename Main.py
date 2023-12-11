@@ -1,18 +1,21 @@
 import ydl_utils
 import pandas as pd
-import numpy
+import numpy as np
 import streamlit as st
 from upload import upload_csv
 
 if "initial_submit" not in st.session_state:
     st.session_state.initial_submit = False
 
+
 def initial_submit():
     st.session_state.initial_submit = True
 
+
 st.title("YouTube Comment Analytics")
 
-@st.cache_data(show_spinner = False)
+
+@st.cache_data(show_spinner=False)
 def extract_entries_for_url(channel_url):
     list_dict = []
     with st.status("Downloading data..."):
@@ -28,37 +31,36 @@ def extract_entries_for_url(channel_url):
             filesize = entry["formats"][-2].get("filesize", "")
             list_dict.append(
                 {
-                    "author" : entry.get("uploader", ""),
-                    "channel_url" : entry.get("uploader_url", ""),
+                    "author": entry.get("uploader", ""),
+                    "channel_url": entry.get("uploader_url", ""),
                     "title": entry.get("title", ""),
-                    "webpage_url" : entry.get("webpage_url", ""),
-                    "view_count" : entry.get("view_count", ""),
-                    "like_count" : entry.get("like_count", ""),
-                    "duration" : entry.get("duration", ""),
-                    "upload_date" : entry.get("upload_date", ""),
-                    "tags" : entry.get("tags", ""),
-                    "categories" : entry.get("categories", ""),
-                    "description" : entry.get("description", ""),
-                    "thumbnail" : entry.get("thumbnail", ""),
-                    "best_format" : best_format,
-                    "filesize_bytes" : filesize,
+                    "webpage_url": entry.get("webpage_url", ""),
+                    "view_count": entry.get("view_count", ""),
+                    "like_count": entry.get("like_count", ""),
+                    "duration": entry.get("duration", ""),
+                    "upload_date": entry.get("upload_date", ""),
+                    "tags": entry.get("tags", ""),
+                    "categories": entry.get("categories", ""),
+                    "description": entry.get("description", ""),
+                    "thumbnail": entry.get("thumbnail", ""),
+                    "best_format": best_format,
+                    "filesize_bytes": filesize,
                 }
             )
     return list_dict
 
+
 with st.form("initial-submit"):
-    url = st.text_input(label = "Please input a valid YouTube Channel URL", value = "")
-    submit = st.form_submit_button(label = "Analyse", on_click = initial_submit)
+    url = st.text_input(label="Please input a valid YouTube Channel URL", value="")
+    submit = st.form_submit_button(label="Analyse", on_click=initial_submit)
 
 if st.session_state.initial_submit:
     df = pd.DataFrame(extract_entries_for_url(url))
     null_flag = 0
-    if df['like_count'].isnull().any():
-        null_flag = 1
     st.header(df["author"][0])
     convert = {}
     for i in range(2, 6):
-        convert[i ** 2] = i
+        convert[i**2] = i
     choice = 4
     if len(df) > 4:
         for i in convert.keys():
@@ -72,13 +74,15 @@ if st.session_state.initial_submit:
         cols = st.columns(num_img)
         for x in cols:
             with x:
-                st.image(df["thumbnail"][k], use_column_width = True)
+                st.image(df["thumbnail"][k], use_column_width=True)
                 k += 1
     st.dataframe(df)
     st.subheader("Download and upload to S3")
     csv_name = st.text_input("Enter CSV File Name:")
     datasource_name = st.text_input("Enter Datasource Name:")
 
-    
-    if  datasource_name  and csv_name:
+    if datasource_name and csv_name:
+        df["like_count"] = df["like_count"].replace("", np.nan)
+        if df["like_count"].isnull().any():
+            null_flag = 1
         upload_csv(df, datasource_name, null_flag, csv=csv_name + ".csv")
