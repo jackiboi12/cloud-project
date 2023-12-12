@@ -12,7 +12,7 @@ def initial_submit():
     st.session_state.initial_submit = True
 
 
-st.title("YouTube Comment Analytics")
+st.title("YouTube data Analytics")
 
 
 @st.cache_data(show_spinner=False)
